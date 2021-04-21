@@ -3,7 +3,7 @@ filetype off
 if empty(glob('~/.vim/autoload/plug.vim'))
 silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
 \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+autocmd VimEnter * PlugInstall --sync | source $MY
 
 endif
 call plug#begin('~/.vim/plugged')
@@ -27,7 +27,19 @@ Plug 'LumaKernel/fern-mapping-fzf.vim'
 " Plug 'lervag/vimtex'
 " Plug 'neoclide/coc.nvim',{'branch': 'release'}
 Plug 'aklt/plantuml-syntax'
-Plug 'previm/previm'
+"Markdown preview
+Plug 'skanehira/preview-markdown.vim'
+
+"vim-sl
+Plug 'mattn/vim-sl'
+"スニペットツール
+Plug 'hrsh7th/vim-vsnip'
+Plug 'hrsh7th/vim-vsnip-integ'
+
+"括弧可読支援
+" Plug 'andymass/vim-matchup'
+"Lint-tool
+" Plug 'dense-analysis/ale' 
 "color scheme
 Plug 'tomasr/molokai'
 Plug 'morhetz/gruvbox'
@@ -39,6 +51,7 @@ Plug 'cocopon/iceberg.vim'
 Plug 'ghifarit53/tokyonight-vim'
 Plug 'whatyouhide/vim-gotham'
 Plug 'sainnhe/forest-night'
+Plug 'aereal/vim-colors-japanesque'
 
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'vim-syntastic/syntastic'
@@ -50,10 +63,13 @@ Plug 'tyru/caw.vim'
 " Plug 'machakann/vim-highlightedyank'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+"Lsp
 Plug 'prabirshrestha/vim-lsp'
 Plug 'mattn/vim-lsp-settings'
-Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
+"Pkug 'mattn/vim-lsp-icons'
+
+Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'lambdalisue/suda.vim'
 Plug 'thinca/vim-quickrun'
 Plug 'ryanoasis/vim-devicons'
@@ -101,6 +117,8 @@ set wildmode=list:longest
 " 折り返し時に表示行単位での移動できるようにする
 nnoremap j gj
 nnoremap k gk
+vnoremap j gj
+vnoremap k gk
 
 "Ctr+nをTabにする
 nnoremap <C-7> <C-i>
@@ -143,17 +161,23 @@ set incsearch
 set wrapscan
 " 検索語をハイライト表示
 set hlsearch
+" キーワードにマッチした数を表示
+set shortmess-=S
 " ESC連打でハイライト解除
 nmap <Esc><Esc> :nohlsearch<CR><Esc>
 nnoremap  <C-c><C-c> :<C-u>nohlsearch<cr><Esc>
+
+" showbreaks
+set showbreak=↪
 
 "vimに色をつける
 syntax on
 " set t_Co=256
 set background=dark
 " forest-night settings
-" set termguicolors
-" colorscheme forest-night
+set termguicolors
+colorscheme forest-night
+let g:forest_night_enable_italic = 1
 
 " colorscheme onedark
 " colorscheme molokai
@@ -165,10 +189,10 @@ set background=dark
 " colorscheme gotham256
 
 " tokyo-night settings
-set termguicolors
-let g:tokyonight_style = 'night' 
-let g:tokyonight_enable_italic = 1
-colorscheme tokyonight
+" set termguicolors
+" let g:tokyonight_style = 'storm' 
+" let g:tokyonight_enable_italic = 1
+" colorscheme tokyonight
 
 "スペースをトリガーにする
 let mapleader = "\<Space>"
@@ -205,12 +229,13 @@ nmap <leader>+ <Plug>AirlineSelectNextTab
 
 
 "入力モード時のカーソル移動
-inoremap <C-j> <Down>
-inoremap <C-k> <Up>
+inoremap <C-j> <C-o>gj
+inoremap <C-k> <C-o>gk
 inoremap <C-h> <Left>
 inoremap <C-l> <Right>
 
-"tmux_navigator-settings
+
+"tmux_navigator-setti:ngs
 let g:tmux_navigator_no_mappings = 1
 nnoremap <silent> <Leader>h :TmuxNavigateLeft<cr>
 nnoremap <silent> <Leader>j :TmuxNavigateDown<cr>
@@ -238,7 +263,7 @@ nnoremap <expr> <silent> <C-]> execute(':LspDefinition') =~ "not supported" ? "\
 
 "settiag NERDTree
 " nnoremap <C-n> :NERDTreeTabsToggle<CR>
-nnoremap <C-n> :Fern . -drawer -reveal=% <CR>
+nnoremap <C-n> :Fern . -drawer -toggle -reveal=% <CR>
 " nnoremap <C-e> :NERDTreeFocusToggle<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 " let NERDTreeShowHidden=1
@@ -270,6 +295,7 @@ function! Preserve(command)
     call setpos('.', cursor_position)
 endfunction
 
+"Quickrun
 if !exists("g:quickrun_config")
     let g:quickrun_config = {
      \    "_" : {
@@ -283,17 +309,13 @@ if !exists("g:quickrun_config")
      \   },
     \    'plantuml': {
     \    "command": "plantuml",
-    \    "outputter": "null",
     \    "exec": ["%c %s","open %s:r.png"]
     \   },
     \}
 endif
 
-" setting vaffle
-function! RenderMyFavoriteIcon(item) abort
-  return WebDevIconsGetFileTypeSymbo/(a:item.basename, a:item.is_dir)
-endfunction
-let g:vaffle_render_custom_icon = 'RenderMyFavoriteIcon'
+" Latex保存時にコンパイル
+" autocmd BufWritePost *.tex QuickRun 
 
 "buffer all delete
 function s:DeleteHiddenBuffers()    
@@ -311,8 +333,12 @@ augroup my-glyph-palette
   autocmd FileType vaffle call glyph_palette#apply()
 augroup END
 
+"vim-matchup
+let g:loaded_matchit = 1
+
 "lsp-settings
 let g:lsp_diagnostics_echo_cursor = 1
+" let g:lsp_diagnostics_float_cursor = 1
 function! s:on_lsp_buffer_enabled() abort
     setlocal omnifunc=lsp#complete
     setlocal signcolumn=yes
@@ -371,10 +397,21 @@ augroup my-glyph-palette
   autocmd FileType nerdtree,startify call glyph_palette#apply()
 augroup END
 
+"fern-settings
 let g:fern#renderer = "nerdfont"
-"PreVim
-let g:previm_enable_realtime = 1
-augroup PrevimSettings
-    autocmd!
-    autocmd BufNewFile,BufRead *.{md,mdwn,mkd,mkdn,mark*} set filetype=markdown
-augroup END
+
+"preview-markdown
+let g:preview_markdown_vertical = 1
+
+"2020   3月号
+" let g:ale_completion_enabled = 1
+" let g:ale_completion_tsserver_autoimport = 1
+
+" augroup _ale_lsp_completion
+"     au!
+"     autocmd User asyncomplete_setup call asyncomplete#a
+"     register_source(asyncomplete#sources#ale#get_source_options({
+"                \ 'priority': 10,
+"                \ }))
+" augroup END
+

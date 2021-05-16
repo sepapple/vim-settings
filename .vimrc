@@ -50,8 +50,10 @@ Plug 'w0ng/vim-hybrid'
 Plug 'cocopon/iceberg.vim'
 Plug 'ghifarit53/tokyonight-vim'
 Plug 'whatyouhide/vim-gotham'
-Plug 'sainnhe/forest-night'
+Plug 'sainnhe/everforest'
 Plug 'aereal/vim-colors-japanesque'
+Plug 'pineapplegiant/spaceduck', { 'branch': 'main' }
+Plug 'sheerun/vim-polyglot'
 
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'vim-syntastic/syntastic'
@@ -71,7 +73,7 @@ Plug 'prabirshrestha/asyncomplete-lsp.vim'
 
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'lambdalisue/suda.vim'
-Plug 'thinca/vim-quickrun'
+Plug 'thinca/vim-quickrun', {'tag': 'v0.8.0'}
 Plug 'ryanoasis/vim-devicons'
 call plug#end()
 
@@ -173,10 +175,13 @@ set showbreak=↪
 "vimに色をつける
 syntax on
 " set t_Co=256
-set background=dark
+
+
 " forest-night settings
 set termguicolors
-colorscheme forest-night
+colorscheme everforest
+set background=dark
+let g:everforest_background = 'soft'
 let g:forest_night_enable_italic = 1
 
 " colorscheme onedark
@@ -208,8 +213,9 @@ set ttimeoutlen=10
 
 "airline-settings
 let g:airline_extensions = ['branch','fzf','tabline','gina']
-let g:airline_theme='forest_night'
-" let g:airline_theme=deus'
+let g:airline_theme='everforest'
+" let g:airline_theme='deus'
+" let g:airline_theme='forest_night'
 set laststatus=2
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
